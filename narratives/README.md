@@ -678,7 +678,7 @@ pnpm i
 | --- | --- |
 | `pnpm dev:ui` | Start the frontend Vite development server on port 3000 (`ui/`) |
 | `pnpm dev:agent` | Stage config and start the Python agent development server on port 5001 (`agent/`) |
-| `pnpm setup:config` | Stage baseline config, prompts, and environment into `agent/` |
+| `pnpm setup:config` | Stage baseline config and prompts into `agent/config.json` |
 | `pnpm build` | Build the React UI and stage compiled assets into `agent/static/` |
 | `pnpm build:ui` | Build the React UI bundle into `ui/dist/` without staging |
 | `pnpm test` | Run unit tests across packages (Vitest + Pytest) |
@@ -768,7 +768,7 @@ pnpm dev:agent
 pnpm dev:ui
 ```
 
-`pnpm dev:agent` automatically stages `agent/config.json` and `agent/.env` from `defaults/` + `prompts/` (incorporating your keys and endpoints from `.env.local`) before starting the Uvicorn server with auto-reload.
+`pnpm dev:agent` automatically stages `agent/config.json` from `defaults/` + `prompts/` (incorporating your `GEMINI_API_KEY` from `.env.local`) before starting the Uvicorn server with auto-reload and `--env-file ../.env.local`.
 
 To manually re-stage configuration without starting the server (e.g. after editing prompt markdown files), run:
 
