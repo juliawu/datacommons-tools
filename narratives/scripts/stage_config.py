@@ -28,11 +28,14 @@ cloud bootloader locally:
    `config/prompts/`.
 3. Injects `GEMINI_API_KEY` from `.env.local`.
 4. Writes `agent/config.json` so
-   `uv run --env-file ../.env.local narratives-agent-dev` runs zero-config.
+   `uv run --env-file ../.env.local narratives-agent-dev` runs without
+   the developer needing to manually configure agent/config.json.
 """
 
+import contextlib
 import json
 import re
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -84,7 +87,7 @@ def _load_base_config() -> dict[str, Any]:
             config.update(
                 json.loads(override_config_path.read_text(encoding="utf-8"))
             )
-        except Exception as e:
+        except (json.JSONDecodeError, OSError) as e:
             print(f"Warning: Failed to parse {override_config_path}: {e}")
     return config
 
@@ -119,15 +122,14 @@ def _resolve_gemini_api_key(env_vars: dict[str, str]) -> str:
     """Resolves Gemini API key from .env.local, existing config, or fallback."""
     existing_key = ""
     if TARGET_CONFIG_FILE.is_file():
-        try:
+        # Target config may be corrupted or unreadable; ignore and overwrite.
+        with contextlib.suppress(json.JSONDecodeError, OSError):
             existing = json.loads(
                 TARGET_CONFIG_FILE.read_text(encoding="utf-8")
             )
             k = existing.get("gemini", {}).get("api_key", "")
             if k and not k.startswith("REPLACE_ME"):
                 existing_key = k
-        except Exception:
-            pass
 
     return (
         env_vars.get("GEMINI_API_KEY", "")
@@ -146,8 +148,16 @@ def _write_config(config: dict[str, Any]) -> None:
 
 def main() -> None:
     # Ensure .env.local exists so `uv run --env-file ../.env.local` succeeds
+    example_env = NARRATIVES_DIR / ".env.example"
     if not ENV_FILE.is_file():
-        ENV_FILE.touch()
+        if example_env.is_file():
+            shutil.copy(example_env, ENV_FILE)
+            print(
+                "Created .env.local from .env.example — please add your"
+                " GEMINI_API_KEY"
+            )
+        else:
+            ENV_FILE.touch()
 
     env_vars = _load_env_vars()
     config = _load_base_config()

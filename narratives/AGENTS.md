@@ -66,7 +66,6 @@ Run from the root of the `/narratives` directory:
   pinned via `packageManager`).
 - `pnpm dev:ui` — start the frontend Vite development server on port 3000 (`pnpm -C ui dev`).
 - `pnpm dev:agent` — stage config and start the Python agent development server on port 5001.
-- `pnpm setup:config` — stage local configuration and prompts into `agent/config.json` (`scripts/stage_config.py`).
 - `pnpm build` — compile the React UI and stage static assets into `agent/static/`.
 - `pnpm build:ui` — compile the React UI bundle into `ui/dist/` without staging.
 - `pnpm test` — run unit tests across the whole application (Vitest for UI + Pytest for agent).
