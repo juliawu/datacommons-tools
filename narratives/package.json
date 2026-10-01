@@ -7,7 +7,6 @@
   "scripts": {
     "dev:ui": "pnpm -C ui dev",
     "dev:agent": "python3 scripts/stage_config.py && cd agent && uv run --env-file ../.env.local narratives-agent-dev",
-    "setup:config": "python3 scripts/stage_config.py",
     "build": "pnpm run build:ui && node scripts/stage_static.mjs",
     "build:ui": "pnpm -C ui build",
     "test": "pnpm run test:ui && pnpm run test:agent",
